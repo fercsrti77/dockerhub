@@ -57,11 +57,12 @@
         </qos_profile>
     </qos_library>
     
-    <routing_service name="Udpv4ToUdpv4TwoDomainReliable">
+    <routing_service name="DomainBridgingOverLAN">
 
         <annotation>
             <documentation>
-                Routes all topics from one input domain to an output domain and the other way around using UDPv4
+                Routes all reliable topics from one input domain to an output 
+                domain and the other way around using UDPv4
             </documentation>
         </annotation>
 
@@ -155,11 +156,11 @@
         </domain_route>
     </routing_service>
 
-    <routing_service name="Udpv4WanRelayReliable">
+    <routing_service name="RelayOverWAN">
 
         <annotation>
             <documentation>
-                Routes topics between endpoints behind NATs
+                Routes reliable topics between endpoints behind NATs
             </documentation>
         </annotation>
 

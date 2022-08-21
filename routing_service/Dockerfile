@@ -1,30 +1,41 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.10
 
-# Copy connext installation to this directory
-# Copy license file to this directory with name license.dat
 #
 # Build container:
-#   $ docker build --build-arg VERSION=6.1.1 --build-arg IS_ARCH=x64Linux2.6gcc4.4.5 -t routing_service:6.1.1 .
+#   Copy connext installation to this directory
+#   $ docker build 
+#       --build-arg VERSION=6.1.1 
+#       --build-arg ARCH=x64Linux2.6gcc4.4.5 
+#       -t routing_service:6.1.1 .
+#
 # Run container in UDPv4 mode:
 #   $ docker run -d 
 #       --network host 
-#       -v $PWD/license.dat:/connext/license.dat 
+#       -v $PWD/license.dat:/rti/license.dat 
 #       -e INPUT_DOMAIN=56 
 #       -e OUTPUT_DOMAIN=57 
 #       --name=routing_service 
 #       routing_service:6.1.1
+#
 # Run container in UDPv4_WAN relay mode:
 #   $ docker run -d 
 #       -p 16000:16000 
-#       -v $PWD/license.dat:/connext/license.dat 
+#       -v $PWD/license.dat:/rti/license.dat 
 #       -e PUBLIC_ADDRESS=127.0.0.1 
-#       -e "DOMAIN=56"
-#       -e "PUBLIC_PORT=16000" -e "HOST_PORT=16000"
-#       -e "CFG_NAME=Udpv4WanRelayReliable"
+#       -e DOMAIN=56
+#       -e PUBLIC_PORT=16000 -e HOST_PORT=16000
+#       -e CFG_NAME=Udpv4WanRelayReliable
 #       --name=routing_service
 #       routing_service:6.1.1
+#
+# Inspect the image:
+#   $ docker run -it rticom/routing_service:6.1.1 /bin/bash
 # Start a bash shell:
-#   $ docker exec -it routing_service bash
+#   $ docker exec -it routing_service /bin/bash
+# See if container is running:
+#   $ sudo docker ps -a
+# See container logs:
+#   $ sudo docker logs routing_service
 # Stop container main process:
 #   $ docker stop routing_service
 # Delete container:
@@ -33,22 +44,27 @@ FROM ubuntu:20.04
 #   $ docker rmi routing_service:6.1.1
 #
 # Upload to Dockerhub:
-#   $ docker login <username>
-#   $ docker image tag routing_service:6.1.1 <username>/routing_service:6.1.1
-#   $ docker push <username>/routing_service:6.1.1
+#   $ docker login --username <username> --password
+#   $ docker image tag routing_service:6.1.1 rticom/routing_service:6.1.1
+#   $ docker push rticom/routing_service:6.1.1
 
-#Working directory
-WORKDIR /connext
+# Working directory
+ENV CONNEXT_WORK_DIR=/rti
+WORKDIR $CONNEXT_WORK_DIR
 
-#Build variables
+# Build variables
+ARG ARCH=x64Linux2.6gcc4.4.5
 ARG VERSION=6.1.1
-ARG IS_ARCH=x64Linux2.6gcc4.4.5
 
-#Run variables
-ENV LD_LIBRARY_PATH $WORKDIR/rti_connext_dds-$CONNEXT_VERSION
-ENV ARGS=""
-ENV RTI_LICENSE_FILE="/connext/license.dat"
+# Run variables
 ENV CONNEXT_VERSION=$VERSION
+
+ENV CONNEXT_ARCH=$ARCH
+ENV LD_LIBRARY_PATH $CONNEXT_WORK_DIR/rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH
+ENV RTI_LICENSE_FILE="/rti/license.dat"
+
+# Service configration variables
+ENV ARGS=""
 ENV INPUT_DOMAIN=1
 ENV DOMAIN=1
 ENV OUTPUT_DOMAIN=2
@@ -61,15 +77,25 @@ ENV ADMIN_PUBLIC_PORT=16001
 ENV ADMIN_HOST_PORT=16001
 ENV MONITORING_PUBLIC_PORT=16002
 ENV MONITORING_HOST_PORT=16002
-ENV CFG_NAME="Udpv4ToUdpv4TwoDomainReliable"
+ENV CFG_NAME="DomainBridgingOverLAN"
 
-#Copy image content
+# Copy image content
 COPY routing_service.xml .
-COPY ./rti_connext_dds-$CONNEXT_VERSION/bin/rtiroutingservice rti_connext_dds-$CONNEXT_VERSION/bin/rtiroutingservice
-COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/bin/$IS_ARCH/rtiroutingserviceapp rti_connext_dds-$CONNEXT_VERSION/resource/app/bin/$IS_ARCH/rtiroutingserviceapp
-COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$IS_ARCH/* rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$IS_ARCH/
-COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/scripts/* rti_connext_dds-$CONNEXT_VERSION/resource/scripts/
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/bin/$CONNEXT_ARCH/rtiroutingserviceapp rti_connext_dds-$CONNEXT_VERSION/resource/app/bin/$CONNEXT_ARCH/rtiroutingserviceapp
+
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddscore.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddscore.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddsc.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddsc.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librticonnextmsgc.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librticonnextmsgc.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddsmetp.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddsmetp.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtidlc.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtidlc.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddssecurity.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddssecurity.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtiapputilsc.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtiapputilsc.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtixml2.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtixml2.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtiroutingservice.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtiroutingservice.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddstransporttcp.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddstransporttcp.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtimonitoring.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtimonitoring.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so.1.1 rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so.1.1
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so
 
 # Execute this commend at startup
-CMD ./rti_connext_dds-$CONNEXT_VERSION/bin/rtiroutingservice -cfgName $CFG_NAME -cfgFile ./routing_service.xml $ARGS
-
+CMD ./rti_connext_dds-$CONNEXT_VERSION/resource/app/bin/$CONNEXT_ARCH/rtiroutingserviceapp -cfgName $CFG_NAME -cfgFile ./routing_service.xml $ARGS
