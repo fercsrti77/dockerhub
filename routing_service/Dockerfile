@@ -1,3 +1,13 @@
+# (c) 2022 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved.
+# RTI grants Licensee a license to use, modify, compile, and create derivative 
+# works of the software solely for use with RTI Connext DDS.  Licensee may 
+# redistribute copies of the software, provided that all such copies are subject 
+# to this license. The software is provided "as is", with no warranty of any 
+# type, including any warranty for fitness for any purpose. RTI is under no 
+# obligation to maintain or support the software.  RTI shall not be liable for 
+# any incidental or consequential damages arising out of the use or inability 
+# to use the software.
+
 FROM ubuntu:22.10
 
 #
@@ -62,6 +72,7 @@ ENV CONNEXT_VERSION=$VERSION
 ENV CONNEXT_ARCH=$ARCH
 ENV LD_LIBRARY_PATH $CONNEXT_WORK_DIR/rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH
 ENV RTI_LICENSE_FILE="/rti/license.dat"
+ENV NDDSHOME=$CONNEXT_WORK_DIR/rti_connext_dds-$CONNEXT_VERSION
 
 # Service configration variables
 ENV ARGS=""
@@ -92,10 +103,16 @@ COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddsse
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtiapputilsc.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtiapputilsc.so
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtixml2.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtixml2.so
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtiroutingservice.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtiroutingservice.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtirsinfrastructure.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtirsinfrastructure.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtirsjniadapter.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtirsjniadapter.so
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddstransporttcp.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddstransporttcp.so
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtimonitoring.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtimonitoring.so
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so.1.1 rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so.1.1
-COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so 
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/nddsjava.jar rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/nddsjava.jar
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/nddsjava.jar rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/nddsjava.jar
+COPY ./rti_connext_dds-$CONNEXT_VERSION/lib/java/rtiroutingservice.jar rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/rtiroutingservice.jar
+COPY ./rti_connext_dds-$CONNEXT_VERSION/lib/java/rtirsadapter.jar rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/rtirsadapter.jar
 
 # Execute this commend at startup
 CMD ./rti_connext_dds-$CONNEXT_VERSION/resource/app/bin/$CONNEXT_ARCH/rtiroutingserviceapp -cfgName $CFG_NAME -cfgFile ./routing_service.xml $ARGS
