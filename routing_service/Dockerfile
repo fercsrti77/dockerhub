@@ -109,6 +109,7 @@ COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddstr
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtimonitoring.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/librtimonitoring.so
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so.1.1 rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so.1.1
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libssl.so 
+COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddsjava.so rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/$CONNEXT_ARCH/libnddsjava.so
 COPY ./rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/nddsjava.jar rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/nddsjava.jar
 COPY ./rti_connext_dds-$CONNEXT_VERSION/lib/java/rtiroutingservice.jar rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/rtiroutingservice.jar
 COPY ./rti_connext_dds-$CONNEXT_VERSION/lib/java/rtirsadapter.jar rti_connext_dds-$CONNEXT_VERSION/resource/app/lib/java/rtirsadapter.jar
